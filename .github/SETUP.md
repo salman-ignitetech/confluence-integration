@@ -44,10 +44,16 @@ Configure these secrets in your repository settings:
    - Syncs `README.md` to Confluence
    - Syncs all files in `docs/` folder to Confluence
 
-3. **Metadata:** Each markdown file must have metadata headers specifying the target space and parent page:
+3. **Metadata:** Each markdown file must have metadata headers:
    ```markdown
    <!-- Space: YOUR_SPACE_KEY -->
-   <!-- Parent: PARENT_PAGE_ID -->
+   <!-- Title: Page Title -->
+   ```
+
+   Optional - to nest under a parent page (uses page **title**, not ID):
+   ```markdown
+   <!-- Space: YOUR_SPACE_KEY -->
+   <!-- Parent: Parent Page Title -->
    <!-- Title: Page Title -->
    ```
 
