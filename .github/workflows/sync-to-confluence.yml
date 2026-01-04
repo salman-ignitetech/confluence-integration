@@ -1,0 +1,88 @@
+name: Sync Docs to Confluence
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "**.md"
+      - ".github/workflows/sync-to-confluence.yml"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install mark
+        run: |
+          wget -q https://github.com/kovetskiy/mark/releases/latest/download/mark_linux_amd64.tar.gz
+          tar -xzf mark_linux_amd64.tar.gz
+          sudo mv mark /usr/local/bin/
+          chmod +x /usr/local/bin/mark
+          mark --version
+
+      - name: Verify secrets are set
+        run: |
+          if [ -z "${{ secrets.CONFLUENCE_BASE_URL }}" ] || \
+             [ -z "${{ secrets.CONFLUENCE_USERNAME }}" ] || \
+             [ -z "${{ secrets.CONFLUENCE_API_TOKEN }}" ] || \
+             [ -z "${{ secrets.CONFLUENCE_SPACE }}" ]; then
+            echo "❌ Error: Required secrets are not set"
+            echo "Please configure CONFLUENCE_BASE_URL, CONFLUENCE_USERNAME, CONFLUENCE_API_TOKEN, and CONFLUENCE_SPACE"
+            exit 1
+          fi
+          echo "✅ All required secrets are configured"
+
+      - name: Create mark configuration
+        run: |
+          cat > .mark.conf << EOF
+          [default]
+          base_url = ${{ secrets.CONFLUENCE_BASE_URL }}
+          username = ${{ secrets.CONFLUENCE_USERNAME }}
+          password = ${{ secrets.CONFLUENCE_API_TOKEN }}
+          space = ${{ secrets.CONFLUENCE_SPACE }}
+          EOF
+          if [ -n "${{ secrets.CONFLUENCE_PARENT_ID }}" ]; then
+            echo "parent_id = ${{ secrets.CONFLUENCE_PARENT_ID }}" >> .mark.conf
+          fi
+
+      - name: Sync README.md to Confluence
+        run: |
+          echo "📄 Syncing README.md..."
+          if mark README.md; then
+            echo "✅ README.md synced successfully"
+          else
+            echo "❌ Failed to sync README.md"
+            exit 1
+          fi
+
+      - name: Sync docs to Confluence
+        run: |
+          echo "📚 Syncing documentation files..."
+          failed_files=()
+          for file in docs/*.md; do
+            if [ -f "$file" ]; then
+              echo "📄 Syncing $file..."
+              if mark "$file"; then
+                echo "✅ $file synced successfully"
+              else
+                echo "❌ Failed to sync $file"
+                failed_files+=("$file")
+              fi
+            fi
+          done
+
+          if [ ${#failed_files[@]} -gt 0 ]; then
+            echo "❌ Some files failed to sync:"
+            printf '  - %s\n' "${failed_files[@]}"
+            exit 1
+          else
+            echo "✅ All documentation files synced successfully"
+          fi
+
+      - name: Sync status
+        if: always()
+        run: |
+          echo "Sync completed. Check your Confluence space for updates."
