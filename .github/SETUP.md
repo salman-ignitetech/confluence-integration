@@ -46,11 +46,9 @@ Configure these secrets in your repository settings:
 
 3. **Metadata:** Each markdown file must have metadata headers specifying the target space and parent page:
    ```markdown
-   <!--
-   title: Page Title
-   space: YOUR_SPACE_KEY
-   parent_id: PARENT_PAGE_ID
-   -->
+   <!-- Space: YOUR_SPACE_KEY -->
+   <!-- Parent: PARENT_PAGE_ID -->
+   <!-- Title: Page Title -->
    ```
 
 ## Testing
