@@ -1,6 +1,6 @@
 # GitHub Actions Setup Guide
 
-This guide explains how to configure GitHub Actions to automatically sync your markdown documentation to Confluence.
+This guide explains how to configure GitHub Actions to automatically sync your markdown documentation to Confluence using [mark](https://github.com/kovetskiy/mark).
 
 ## Required GitHub Secrets
 
@@ -15,6 +15,7 @@ Configure these secrets in your repository settings:
 
   - Your Confluence instance URL
   - Example: `https://your-domain.atlassian.net`
+  - For Confluence Cloud, include `/wiki` suffix: `https://your-domain.atlassian.net/wiki`
   - Do not include trailing slash
 
 - **`CONFLUENCE_USERNAME`**
@@ -25,19 +26,8 @@ Configure these secrets in your repository settings:
 - **`CONFLUENCE_API_TOKEN`**
 
   - Your Confluence API token
-  - Generate at: Atlassian Account → Security → API tokens
+  - Generate at: [Atlassian Account](https://id.atlassian.com/manage-profile/security/api-tokens) → Security → API tokens
   - **Important:** Use API token, not your password
-
-- **`CONFLUENCE_SPACE`**
-  - The Confluence space key where pages will be created
-  - Example: `MYSPACE`
-
-### Optional Secrets
-
-- **`CONFLUENCE_PARENT_ID`**
-  - The ID of the parent page under which new pages will be created
-  - Leave empty if you want pages at the root of the space
-  - To find a page ID: View page in Confluence, check the URL: `.../pages/viewpage.action?pageId=123456789`
 
 ## How It Works
 
@@ -49,12 +39,12 @@ Configure these secrets in your repository settings:
 
 2. **Process:**
 
-   - Installs the `mark` tool
-   - Creates configuration from GitHub secrets
+   - Installs the `mark` tool from GitHub releases
+   - Sets environment variables (`MARK_USERNAME`, `MARK_PASSWORD`, `MARK_BASE_URL`) from GitHub secrets
    - Syncs `README.md` to Confluence
    - Syncs all files in `docs/` folder to Confluence
 
-3. **Metadata:** Each markdown file should have metadata headers:
+3. **Metadata:** Each markdown file must have metadata headers specifying the target space and parent page:
    ```markdown
    <!--
    title: Page Title
@@ -72,7 +62,7 @@ Configure these secrets in your repository settings:
 
 ## Troubleshooting
 
-- **Workflow fails:** Check the Actions logs for error messages
-- **Pages not appearing:** Verify secrets are correct and you have write permissions
-- **Authentication errors:** Double-check your API token is valid
-- **Wrong space:** Verify `CONFLUENCE_SPACE` secret matches your target space key
+- **Workflow fails at install:** Check if the mark release URL has changed
+- **Authentication errors:** Double-check your API token is valid and username is correct
+- **Pages not appearing:** Verify you have write permissions to the target space
+- **Wrong space:** Check the `space:` value in each markdown file's metadata header

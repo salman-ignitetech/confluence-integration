@@ -9,8 +9,12 @@ on:
       - ".github/workflows/sync-to-confluence.yml"
 
 jobs:
-  sync:
+  sync-to-confluence:
     runs-on: ubuntu-latest
+    env:
+      MARK_USERNAME: ${{ secrets.CONFLUENCE_USERNAME }}
+      MARK_PASSWORD: ${{ secrets.CONFLUENCE_API_TOKEN }}
+      MARK_BASE_URL: ${{ secrets.CONFLUENCE_BASE_URL }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,23 +29,12 @@ jobs:
 
       - name: Verify secrets are set
         run: |
-          if [ -z "${{ secrets.CONFLUENCE_BASE_URL }}" ] || \
-             [ -z "${{ secrets.CONFLUENCE_USERNAME }}" ] || \
-             [ -z "${{ secrets.CONFLUENCE_API_TOKEN }}" ]; then
+          if [ -z "$MARK_BASE_URL" ] || [ -z "$MARK_USERNAME" ] || [ -z "$MARK_PASSWORD" ]; then
             echo "Error: Required secrets are not set"
             echo "Please configure CONFLUENCE_BASE_URL, CONFLUENCE_USERNAME, and CONFLUENCE_API_TOKEN"
             exit 1
           fi
           echo "All required secrets are configured"
-
-      - name: Create mark configuration
-        run: |
-          cat > .mark.conf << EOF
-          [default]
-          base_url = ${{ secrets.CONFLUENCE_BASE_URL }}
-          username = ${{ secrets.CONFLUENCE_USERNAME }}
-          password = ${{ secrets.CONFLUENCE_API_TOKEN }}
-          EOF
 
       - name: Sync README.md to Confluence
         run: |
