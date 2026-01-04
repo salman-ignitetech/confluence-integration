@@ -1,7 +1,7 @@
 <!--
-title: Confluence Integration Test
-space: YOUR_SPACE_KEY
-parent_id: PARENT_PAGE_ID
+title: aud-confluence-Confluence Integration Test
+space: ENG
+parent_id: 675545098
 -->
 
 # Confluence Integration Test
@@ -33,12 +33,15 @@ This repository contains documentation that will be synced to Confluence. The ma
    cp .mark.conf.example .mark.conf
    ```
 3. Edit `.mark.conf` with your:
+
    - Confluence base URL
    - Username (email)
    - API token (password field)
-   - Space key
-   - Parent page ID (optional)
-4. Update the metadata headers in each markdown file (replace `YOUR_SPACE_KEY` and `PARENT_PAGE_ID` with your values)
+
+4. Configure each markdown file's metadata header:
+   - Set `space:` to your Confluence space key
+   - Set `parent_id:` to the parent page ID (optional - see [PARENT_ID_GUIDE.md](./PARENT_ID_GUIDE.md) for how to get it)
+   - Each file can have different space and parent_id values
 
 ### Syncing to Confluence
 
@@ -60,20 +63,26 @@ This repository includes a GitHub Actions workflow that automatically syncs docu
 
 1. Go to your repository on GitHub
 2. Navigate to **Settings** → **Secrets and variables** → **Actions**
-3. Add the following secrets:
+3. Add the following secrets (credentials only):
    - `CONFLUENCE_BASE_URL` - Your Confluence instance URL (e.g., `https://your-domain.atlassian.net`)
    - `CONFLUENCE_USERNAME` - Your Confluence username (email)
    - `CONFLUENCE_API_TOKEN` - Your Confluence API token
-   - `CONFLUENCE_SPACE` - Your Confluence space key
-   - `CONFLUENCE_PARENT_ID` - (Optional) Parent page ID
+
+**Configure Markdown Files:**
+
+Each markdown file must have its metadata header configured manually:
+
+- `space:` - Your Confluence space key
+- `parent_id:` - (Optional) Parent page ID - see [PARENT_ID_GUIDE.md](./PARENT_ID_GUIDE.md) for instructions
 
 **How it works:**
 
 - The workflow triggers automatically on push to `main` branch
 - Only runs when markdown files (`.md`) are changed
 - Installs the `mark` tool in the GitHub Actions runner
+- Creates `.mark.conf` with credentials from GitHub secrets
 - Syncs `README.md` and all files in the `docs/` folder to Confluence
-- Uses the metadata headers in each markdown file for page configuration
+- Each file uses its own metadata header for space and parent_id configuration
 
 **View workflow runs:**
 
@@ -84,10 +93,9 @@ Check the **Actions** tab in your GitHub repository to see sync status and logs.
 ```
 .
 ├── README.md                              # This file (root documentation)
+├── PARENT_ID_GUIDE.md                     # Guide on how to get parent IDs
 ├── .mark.conf.example                     # Example configuration file
 ├── .mark.conf                             # Your actual config (create from example)
-├── .gitignore                             # Git ignore file
-├── setup.sh                               # Setup script
 ├── .github/
 │   └── workflows/
 │       └── sync-to-confluence.yml         # GitHub Actions workflow

@@ -12,15 +12,18 @@ Configure these secrets in your repository settings:
 ### Required Secrets
 
 - **`CONFLUENCE_BASE_URL`**
+
   - Your Confluence instance URL
   - Example: `https://your-domain.atlassian.net`
   - Do not include trailing slash
 
 - **`CONFLUENCE_USERNAME`**
+
   - Your Confluence username (usually your email address)
   - Example: `user@example.com`
 
 - **`CONFLUENCE_API_TOKEN`**
+
   - Your Confluence API token
   - Generate at: Atlassian Account → Security → API tokens
   - **Important:** Use API token, not your password
@@ -39,11 +42,13 @@ Configure these secrets in your repository settings:
 ## How It Works
 
 1. **Trigger:** The workflow runs automatically when:
+
    - Code is pushed to the `main` branch
    - Any `.md` file is changed
    - The workflow file itself is updated
 
 2. **Process:**
+
    - Installs the `mark` tool
    - Creates configuration from GitHub secrets
    - Syncs `README.md` to Confluence
@@ -71,4 +76,3 @@ Configure these secrets in your repository settings:
 - **Pages not appearing:** Verify secrets are correct and you have write permissions
 - **Authentication errors:** Double-check your API token is valid
 - **Wrong space:** Verify `CONFLUENCE_SPACE` secret matches your target space key
-
