@@ -48,7 +48,7 @@ jobs:
       - name: Sync README.md to Confluence
         run: |
           echo "Syncing README.md..."
-          if mark --debug README.md; then
+          if mark --log-level DEBUG -f README.md; then
             echo "README.md synced successfully"
           else
             echo "Failed to sync README.md"
@@ -62,7 +62,7 @@ jobs:
           for file in docs/*.md; do
             if [ -f "$file" ]; then
               echo "Syncing $file..."
-              if mark "$file"; then
+              if mark -f "$file"; then
                 echo "$file synced successfully"
               else
                 echo "Failed to sync $file"
