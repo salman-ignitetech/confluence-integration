@@ -35,11 +35,20 @@ jobs:
             exit 1
           fi
           echo "All required secrets are configured"
+          echo "Base URL: $MARK_BASE_URL"
+          echo "Username: $MARK_USERNAME"
+
+      - name: Debug - Show README metadata
+        run: |
+          echo "=== README.md first 5 lines ==="
+          head -5 README.md
+          echo "=== Files in current directory ==="
+          ls -la *.md
 
       - name: Sync README.md to Confluence
         run: |
           echo "Syncing README.md..."
-          if mark README.md; then
+          if mark --debug README.md; then
             echo "README.md synced successfully"
           else
             echo "Failed to sync README.md"
